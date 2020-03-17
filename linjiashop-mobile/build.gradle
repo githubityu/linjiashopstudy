@@ -1,0 +1,16 @@
+version '1.0-SNAPSHOT'
+//bootjar
+apply plugin: 'org.springframework.boot'
+dependencies {
+    implementation libraries['spring-boot-starter-data-jpa']
+    implementation libraries['spring-boot-starter-security']
+    implementation libraries['swagger2']
+    implementation libraries['swagger-ui']
+    implementation libraries['druid-spring-boot-starter']
+    implementation libraries['fastjson']
+    implementation libraries['nutz']
+    implementation libraries['quartz']
+
+    compile project(':common-core')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

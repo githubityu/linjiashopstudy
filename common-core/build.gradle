@@ -1,0 +1,26 @@
+
+version '1.0-SNAPSHOT'
+
+
+dependencies {
+    implementation libraries['spring-boot-starter-security']
+    implementation libraries['spring-boot-starter-data-jpa']
+    implementation libraries['spring-boot-starter-data-redis']
+    implementation libraries['commons-beanutils']
+    implementation libraries['commons-lang3']
+    implementation libraries['quartz']
+    implementation libraries['spring-boot-starter-mail']
+    implementation libraries['jwt']
+    implementation libraries['nutz']
+    implementation libraries['jxls']
+    implementation libraries['jxls-poi']
+    runtimeOnly libraries['mysql']
+    implementation libraries['swagger2']
+    implementation libraries['swagger-ui']
+    implementation libraries['UserAgentUtils']
+    implementation libraries['qcloudsms']
+    implementation libraries['aliyun-java-sdk-core']
+    implementation libraries['commons-io']
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

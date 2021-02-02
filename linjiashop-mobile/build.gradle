@@ -7,9 +7,11 @@ dependencies {
     implementation libraries['swagger2']
     implementation libraries['swagger-ui']
     implementation libraries['druid-spring-boot-starter']
-    implementation libraries['fastjson']
     implementation libraries['nutz']
     implementation libraries['quartz']
+    implementation libraries['weixin-java-pay']
+    implementation libraries['weixin-java-miniapp']
+    implementation libraries['commons-io']
 
     compile project(':common-core')
     testCompile group: 'junit', name: 'junit', version: '4.12'

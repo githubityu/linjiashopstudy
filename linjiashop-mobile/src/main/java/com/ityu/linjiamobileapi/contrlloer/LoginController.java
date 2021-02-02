@@ -4,15 +4,17 @@ package com.ityu.linjiamobileapi.contrlloer;
 import com.ityu.bean.entity.shop.ShopUser;
 import com.ityu.bean.vo.UserInfo;
 import com.ityu.bean.vo.front.Rets;
+import com.ityu.bean.vo.shop.WechatInfo;
+import com.ityu.cache.CacheDao;
 import com.ityu.cache.TokenCache;
+import com.ityu.service.base.ApplicationProperties;
 import com.ityu.service.shop.ShopUserService;
-import com.ityu.service.system.UserService;
 import com.ityu.utils.JwtTokenUtil;
 import com.ityu.utils.RandomUtil;
+import com.ityu.utils.StringUtil;
 import com.ityu.web.controller.BaseController;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,14 +39,18 @@ import java.util.Map;
 public class LoginController extends BaseController {
     @Autowired
     private ShopUserService shopUserService;
-    @Autowired
-    private UserService userService;
 
     @Autowired
     BCryptPasswordEncoder encoder;
 
     @Autowired
     private TokenCache tokenCache;
+
+    @Autowired
+    private CacheDao cacheDao;
+
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
 
@@ -55,9 +61,22 @@ public class LoginController extends BaseController {
     })
     @RequestMapping(value = "sendSmsCode", method = RequestMethod.POST)
     public Object sendSmsCode(@RequestParam String mobile) {
-        String smsCode = shopUserService.sendSmsCode(mobile);
-        //todo 测试环境直接返回验证码，生成环境切忌返回该验证码
-        return Rets.success(smsCode);
+        if("15011112222".equals(mobile)){
+            return Rets.success(shopUserService.sendSmsCodeForTest(mobile));
+        }
+        if ("prod".equals(applicationProperties.getEnv())) {
+            //生产环境
+            if(StringUtil.isMobile(mobile)) {
+                Boolean ret = shopUserService.sendSmsCode(mobile);
+                return Rets.success(ret);
+            }else{
+                return Rets.failure("非法的手机号");
+            }
+        } else {
+            //测试环境
+            String ret = shopUserService.sendSmsCodeForTest(mobile);
+            return Rets.success(ret);
+        }
     }
 
     /**
@@ -88,10 +107,18 @@ public class LoginController extends BaseController {
                     user = shopUserService.register(mobile, initPassword);
                     result.put("initPassword", initPassword);
                 }
-                String token = JwtTokenUtil.getInstance().generateToken(user.getMobile());
+                String token = JwtTokenUtil.getInstance().generateToken(user.getMobile(), user.getId());
                 String sToken = JwtTokenUtil.TOKEN_PREFIX + token;
-                tokenCache.putToken(token, user.getMobile());
-                result.put("user", user);
+                user.setLastLoginTime(new Date());
+                shopUserService.update(user);
+                tokenCache.putToken(token, user.getId());
+                UserInfo userInfo = new UserInfo();
+                BeanUtils.copyProperties(user, userInfo);
+                WechatInfo wechatInfo = cacheDao.hget(CacheDao.SESSION, "WECHAT_INFO" + user.getId(), WechatInfo.class);
+                if (wechatInfo != null) {
+                    userInfo.setRefreshWechatInfo(false);
+                }
+                result.put("user", userInfo);
                 logger.info("token:{}", token);
                 result.put("token", sToken);
                 return Rets.success(result);
@@ -128,14 +155,18 @@ public class LoginController extends BaseController {
             if (!encoder.matches(password, user.getPassword())) {
                 return Rets.failure("输入的密码错误");
             }
-            String token = JwtTokenUtil.getInstance().generateToken(user.getMobile());
+            String token = JwtTokenUtil.getInstance().generateToken(user.getMobile(), user.getId());
             String sToken = JwtTokenUtil.TOKEN_PREFIX + token;
-            tokenCache.putToken(token, user.getMobile());
+            tokenCache.putToken(token, user.getId());
             Map<String, Object> result = new HashMap<>(1);
             user.setLastLoginTime(new Date());
             shopUserService.update(user);
             UserInfo userInfo = new UserInfo();
             BeanUtils.copyProperties(user, userInfo);
+            WechatInfo wechatInfo = cacheDao.hget(CacheDao.SESSION,"WECHAT_INFO"+user.getId(),WechatInfo.class);
+            if(wechatInfo!=null){
+                userInfo.setRefreshWechatInfo(false);
+            }
             logger.info("token:{}", sToken);
             result.put("token", sToken);
             result.put("user", userInfo);

@@ -1,0 +1,12 @@
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation libraries['evo-inflector']
+    implementation libraries['commons-cli']
+    implementation libraries['velocity']
+    implementation libraries['nutz']
+    runtimeOnly libraries['mysql']
+    implementation libraries['druid-spring-boot-starter']
+    implementation libraries['spring-boot-starter-data-jpa']
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

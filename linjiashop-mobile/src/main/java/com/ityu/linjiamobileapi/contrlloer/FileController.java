@@ -25,7 +25,7 @@ import java.io.*;
 @RequestMapping("/file")
 public class FileController extends BaseController {
     @Autowired
-    private static  final Logger logger = LoggerFactory.getLogger(FileController.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
     @Autowired
     private FileService fileService;
     @Autowired
@@ -33,21 +33,23 @@ public class FileController extends BaseController {
 
     /**
      * 上传文件
+     *
      * @param multipartFile
      * @return
      */
-    @RequestMapping(value="upload",method = RequestMethod.POST)
+    @RequestMapping(value = "upload", method = RequestMethod.POST)
     public Object upload(@RequestPart("file") MultipartFile multipartFile) {
 
         try {
             FileInfo fileInfo = fileService.upload(multipartFile);
             return Rets.success(fileInfo);
         } catch (Exception e) {
-            logger.error("上传文件异常",e);
+            logger.error("上传文件异常", e);
             return Rets.failure("上传文件失败");
         }
     }
-    @RequestMapping(value = "upload/base64",method = RequestMethod.POST)
+
+    @RequestMapping(value = "upload/base64", method = RequestMethod.POST)
     public Object uploadUploadFileBase64(@RequestBody Base64File base64File) {
 
         try {
@@ -57,27 +59,42 @@ public class FileController extends BaseController {
             shopUserService.update(user);
             return Rets.success(user);
         } catch (Exception e) {
-            logger.error("上传文件异常",e);
+            logger.error("上传文件异常", e);
             return Rets.failure("上传文件失败");
         }
     }
+
     /**
      * 下载文件
+     *
+     * @param fileName
      * @param fileName
      */
-    @RequestMapping(value="download",method = RequestMethod.GET)
-    public void download(@RequestParam("idFile") String fileName){
-        FileInfo fileInfo = fileService.getByName(fileName);
-        fileName = StringUtil.isEmpty(fileName)? fileInfo.getOriginalFileName():fileName;
+    @RequestMapping(value = "download", method = RequestMethod.GET)
+    public void download(@RequestParam(value = "fileName", required = false) String fileName,
+                         @RequestParam(value = "idFile", required = false) Long idFile) {
+        FileInfo fileInfo = null;
+        if (StringUtil.isNotEmpty(fileName)) {
+            fileInfo = fileService.getByName(fileName);
+        }
+        if (idFile != null) {
+            fileInfo = fileService.get(idFile);
+        }
+        downloadFile(fileInfo);
+    }
+
+    public void downloadFile(FileInfo fileInfo) {
+        String fileName = fileInfo.getOriginalFileName();
         HttpServletResponse response = HttpUtil.getResponse();
         response.setContentType("application/x-download");
         try {
             fileName = new String(fileName.getBytes(), "ISO-8859-1");
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        byte[] buffer = new byte[1024];
+        int length = 1024;
+        byte[] buffer = new byte[length];
         FileInputStream fis = null;
         BufferedInputStream bis = null;
 
@@ -88,14 +105,15 @@ public class FileController extends BaseController {
             fis = new FileInputStream(file);
             bis = new BufferedInputStream(fis);
             int i = bis.read(buffer);
-            while(i != -1){
-                os.write(buffer);
+            while (i != -1) {
+                os.write(buffer,0,i);
+                buffer = new byte[length];
                 i = bis.read(buffer);
             }
 
         } catch (Exception e) {
-            logger.error("download error",e);
-        }finally {
+            logger.error("download error", e);
+        } finally {
             try {
                 bis.close();
                 fis.close();
@@ -103,16 +121,17 @@ public class FileController extends BaseController {
                 logger.error("close inputstream error", e);
             }
         }
-
     }
+
 
     /**
      * 获取base64图片数据
+     *
      * @param fileName
      * @return
      */
-    @RequestMapping(value="getImgBase64",method = RequestMethod.GET)
-    public Object getImgBase64(@RequestParam("idFile")String fileName){
+    @RequestMapping(value = "getImgBase64", method = RequestMethod.GET)
+    public Object getImgBase64(@RequestParam("idFile") String fileName) {
 
         FileInfo fileInfo = fileService.getByName(fileName);
         FileInputStream fis = null;
@@ -125,13 +144,13 @@ public class FileController extends BaseController {
             String base64 = CryptUtil.encodeBASE64(bytes);
             return Rets.success(Maps.newHashMap("imgContent", base64));
         } catch (Exception e) {
-            logger.error("get img error",e);
+            logger.error("get img error", e);
             return Rets.failure("获取图片异常");
-        }finally{
+        } finally {
             try {
                 fis.close();
-            }catch (Exception e){
-                logger.error("close getImgBase64 error",e);
+            } catch (Exception e) {
+                logger.error("close getImgBase64 error", e);
             }
         }
 
@@ -139,15 +158,16 @@ public class FileController extends BaseController {
 
     /**
      * 获取图片流
+     *
      * @param response
      * @param fileName
      */
-    @RequestMapping(value="getImgStream",method = RequestMethod.GET)
+    @RequestMapping(value = "getImgStream", method = RequestMethod.GET)
     public void getImgStream(HttpServletResponse response,
-                             @RequestParam("idFile")String fileName){
+                             @RequestParam("idFile") String fileName) {
         FileInfo fileInfo = fileService.getByName(fileName);
         FileInputStream fis = null;
-        response.setContentType("image/"+fileInfo.getRealFileName().split("\\.")[1]);
+        response.setContentType("image/" + fileInfo.getRealFileName().split("\\.")[1]);
         try {
             OutputStream out = response.getOutputStream();
             File file = new File(fileInfo.getAblatePath());
@@ -157,13 +177,13 @@ public class FileController extends BaseController {
             out.write(b);
             out.flush();
         } catch (Exception e) {
-            logger.error("getImgStream error",e);
+            logger.error("getImgStream error", e);
         } finally {
             if (fis != null) {
                 try {
                     fis.close();
                 } catch (IOException e) {
-                    logger.error("close getImgStream error",e);
+                    logger.error("close getImgStream error", e);
                 }
             }
         }

@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import javax.validation.constraints.NotBlank;
 
 @Entity(name="t_cms_banner")
-@Table(appliesTo = "t_cms_banner",comment = "Banner")
+@Table(appliesTo = "t_cms_banner",comment = "广告banner")
 @Data
 public class Banner extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(128) COMMENT '点击banner跳转到url'")

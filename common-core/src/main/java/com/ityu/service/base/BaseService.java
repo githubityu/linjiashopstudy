@@ -99,6 +99,10 @@ public abstract class BaseService<T, ID extends Serializable, R extends BaseRepo
     }
 
     @Override
+    public List<T> queryAll(Sort sort) {
+        return dao.findAll(sort);
+    }
+    @Override
     public List<Map> queryBySql(String sql) {
         return dao.queryBySql(sql);
     }

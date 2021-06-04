@@ -6,6 +6,7 @@ dependencies {
     implementation libraries['spring-boot-starter-security']
     implementation libraries['spring-boot-starter-data-jpa']
     implementation libraries['spring-boot-starter-data-redis']
+    implementation libraries['spring-boot-starter-validation']
     implementation libraries['commons-beanutils']
     implementation libraries['commons-lang3']
     implementation libraries['quartz']

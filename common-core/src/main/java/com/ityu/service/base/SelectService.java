@@ -40,6 +40,13 @@ public interface SelectService<T, ID> {
     List<T> queryAll();
 
     /**
+     * 按指定顺序查询所有结果
+     * @param sort
+     * @return
+     */
+    List<T> queryAll(Sort sort);
+
+    /**
      * 查询所有结果
      * @return 获取分页结果
      */

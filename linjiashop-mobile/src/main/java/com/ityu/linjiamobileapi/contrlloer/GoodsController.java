@@ -2,16 +2,10 @@ package com.ityu.linjiamobileapi.contrlloer;
 
 
 import com.ityu.bean.constant.factory.PageFactory;
-import com.ityu.bean.entity.shop.AttrKey;
-import com.ityu.bean.entity.shop.AttrVal;
-import com.ityu.bean.entity.shop.Goods;
-import com.ityu.bean.entity.shop.GoodsSku;
+import com.ityu.bean.entity.shop.*;
 import com.ityu.bean.vo.front.Rets;
 import com.ityu.bean.vo.query.SearchFilter;
-import com.ityu.service.shop.AttrKeyService;
-import com.ityu.service.shop.AttrValService;
-import com.ityu.service.shop.GoodsService;
-import com.ityu.service.shop.GoodsSkuService;
+import com.ityu.service.shop.*;
 import com.ityu.utils.Lists;
 import com.ityu.utils.Maps;
 import com.ityu.utils.StringUtil;
@@ -36,7 +30,8 @@ public class GoodsController extends BaseController {
     private GoodsSkuService goodsSkuService;
     @Autowired
     private AttrKeyService attrKeyService;
-
+    @Autowired
+    private CategoryService categoryService;
     /**
      * 获取指定类别下的商品列表
      *
@@ -46,8 +41,16 @@ public class GoodsController extends BaseController {
     @RequestMapping(value = "/queryGoods", method = RequestMethod.GET)
     public Object queryGoods(@RequestParam("idCategory") Long idCategory) {
         Page<Goods> page = new PageFactory<Goods>().defaultPage();
-        page.addFilter(SearchFilter.build("idCategory", SearchFilter.Operator.EQ, idCategory));
-        page.addFilter(SearchFilter.build("isOnSale", true));
+        List<Category> categories = categoryService.queryAll(SearchFilter.build("pid",idCategory));
+        List<Long> ids = Lists.newArrayList(idCategory);
+        categories.forEach(item->{
+            ids.add(item.getId());
+        });
+        if(ids.size()==1) {
+            page.addFilter(SearchFilter.build("idCategory", SearchFilter.Operator.EQ, idCategory));
+        }else{
+            page.addFilter(SearchFilter.build("idCategory", SearchFilter.Operator.IN, ids));
+        }        page.addFilter(SearchFilter.build("isOnSale", true));
         page = goodsService.queryPage(page);
         return Rets.success(page);
     }

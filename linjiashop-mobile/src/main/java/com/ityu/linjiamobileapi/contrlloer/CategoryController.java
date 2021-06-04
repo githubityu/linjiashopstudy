@@ -6,6 +6,7 @@ import com.ityu.bean.entity.cms.Banner;
 import com.ityu.bean.entity.shop.Category;
 import com.ityu.bean.entity.shop.CategoryBannerRel;
 import com.ityu.bean.vo.front.Rets;
+import com.ityu.bean.vo.node.CategoryNode;
 import com.ityu.bean.vo.query.SearchFilter;
 import com.ityu.service.shop.CategoryBannerRelService;
 import com.ityu.service.shop.CategoryService;
@@ -34,7 +35,7 @@ public class CategoryController extends BaseController {
     private CategoryBannerRelService categoryBannerRelService;
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     public Object list() {
-        List<Category> list = categoryService.queryAll();
+        List<CategoryNode> list = categoryService.getCategories();
         list.forEach(item->{
             List<CategoryBannerRel> relList = categoryBannerRelService.queryAll(SearchFilter.build("idCategory",item.getId()));
             List<Banner> bannerList = Lists.newArrayList();

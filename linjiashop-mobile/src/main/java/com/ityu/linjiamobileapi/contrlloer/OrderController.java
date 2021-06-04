@@ -84,6 +84,9 @@ public class OrderController extends BaseController {
             address = addressService.getDefaultAddr(idUser);
         } else {
             address = addressService.get(chosenAddressId);
+            if(address==null){
+                address = addressService.getDefaultAddr(idUser);
+            }
         }
         return Rets.success(Maps.newHashMap(
                 "list", list, "addr", address
@@ -118,7 +121,7 @@ public class OrderController extends BaseController {
             orderItem.setIdSku(cart.getIdSku());
             orderItem.setPrice(cart.getPrice());
             orderItem.setCount(cart.getCount());
-            orderItem.setTotalPrice(orderItem.getPrice().multiply(orderItem.getCount()));
+            orderItem.setTotalPrice(orderItem.getPrice().multiply(new BigDecimal(orderItem.getCount())));
             totalPrice = totalPrice.add(orderItem.getTotalPrice());
             itemList.add(orderItem);
         }
@@ -143,7 +146,7 @@ public class OrderController extends BaseController {
         Order order = orderService.confirmReceive(orderSn);
         return Rets.success(order);
     }
-    
+
     @RequestMapping(value = "getExpressInfo/{orderSn}", method = RequestMethod.GET)
     public Object getExpressInfo(@PathVariable(value = "orderSn") String orderSn) {
         Order order = orderService.getByOrderSn(orderSn);

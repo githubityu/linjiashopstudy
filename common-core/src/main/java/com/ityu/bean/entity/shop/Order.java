@@ -29,28 +29,30 @@ public class Order extends ShopBaseEntity {
     @Column(columnDefinition = "VARCHAR(32) COMMENT '订单号'")
     private String orderSn;
     /**
-     * @see
+     * @see OrderEnum.OrderStatusEnum
      */
     @Column(columnDefinition = "INT COMMENT '状态'")
     private Integer status;
-
+    /**
+     * 收件人信息使用 下面三个字段(收件人，收件人电话，收件地址）代替
+     */
     @Deprecated
     @Column(name="id_address",columnDefinition = "BIGINT COMMENT '收货信息'")
     private Long idAddress;
+    /**
+     *  收件人信息使用 下面三个字段(收件人，收件人电话，收件地址）代替
+     */
     @Deprecated
     @JoinColumn(name="id_address",  referencedColumnName="id",insertable = false, updatable = false,foreignKey = @ForeignKey(name="none",value = ConstraintMode.NO_CONSTRAINT))
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
-    /**
-     *  收件人信息使用 下面三个字段代替
-     */
+
     @Column(columnDefinition = "VARCHAR(32) COMMENT '收件人'")
     private String consignee;
     @Column(columnDefinition = "VARCHAR(16) COMMENT '收件人电话'")
     private String mobile;
     @Column(columnDefinition = "VARCHAR(64) COMMENT '收件地址'")
     private String consigneeAddress;
-
 
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "id_order")
@@ -110,6 +112,7 @@ public class Order extends ShopBaseEntity {
         }
         return null;
     }
+
     public Boolean hasPayed(){
         return OrderEnum.PayStatusEnum.UN_SEND.getId().equals(payStatus);
     }

@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 
 /**
  * 类型转换器
- * 
+ *
  * @author xiaoleilu
- * 
+ *
  */
 public class Convert {
-	
+
 
 	private Convert() {
 		// 静态类不可实例化
@@ -27,7 +27,7 @@ public class Convert {
 	 * 转换为字符串<br>
 	 * 如果给定的值为null，或者转换失败，返回默认值<br>
 	 * 转换失败不会报错
-	 * 
+	 *
 	 * @param value 被转换的值
 	 * @param defaultValue 转换错误时的默认值
 	 * @return 结果
@@ -49,7 +49,7 @@ public class Convert {
 	 * 转换为int<br>
 	 * 如果给定的值为空，或者转换失败，返回默认值<br>
 	 * 转换失败不会报错
-	 * 
+	 *
 	 * @param value 被转换的值
 	 * @param defaultValue 转换错误时的默认值
 	 * @return 结果
@@ -75,20 +75,20 @@ public class Convert {
 		}
 	}
 
-	
+
 	/**
 	 * 转换为Integer数组<br>
-	 * 
+	 *
 	 * @param str 被转换的值
 	 * @return 结果
 	 */
 	public static Integer[] toIntArray(String str) {
 		return toIntArray(",", str);
 	}
-	
+
 	/**
 	 * 转换为Integer数组<br>
-	 * 
+	 *
 	 * @param split 分隔符
 	 * @param split 被转换的值
 	 * @return 结果
@@ -118,10 +118,10 @@ public class Convert {
 		return ints;
 	}
 
-	
+
 	/**
 	 * 转换为String数组<br>
-	 * 
+	 *
 	 * @param split 分隔符
 	 * @param split 被转换的值
 	 * @return 结果
@@ -134,7 +134,7 @@ public class Convert {
 	 * 转换为long<br>
 	 * 如果给定的值为空，或者转换失败，返回默认值<br>
 	 * 转换失败不会报错
-	 * 
+	 *
 	 * @param value 被转换的值
 	 * @param defaultValue 转换错误时的默认值
 	 * @return 结果
@@ -164,7 +164,7 @@ public class Convert {
 
 	/**
 	 * 转换为Long数组<br>
-	 * 
+	 *
 	 * @param isIgnoreConvertError 是否忽略转换错误，忽略则给值null
 	 * @param values 被转换的值
 	 * @return 结果
@@ -185,5 +185,5 @@ public class Convert {
 	}
 
 
-	
+
 }

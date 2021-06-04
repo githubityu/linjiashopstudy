@@ -50,6 +50,7 @@ subprojects {
         implementation libraries['spring-boot-starter-web']
         implementation libraries['spring-boot-starter-aop']
         implementation libraries['spring-boot-starter-actuator']
+        implementation libraries['spring-boot-starter-validation']
         implementation fileTree(include: ['*.jar'], dir: 'libs')
         compileOnly libraries['lombok']
         annotationProcessor libraries['lombok']

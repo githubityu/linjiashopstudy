@@ -4,10 +4,7 @@ package com.ityu.service.shop;
 
 
 import com.ityu.bean.constant.CfgKey;
-import com.ityu.bean.entity.shop.ExpressInfo;
-import com.ityu.bean.entity.shop.Order;
-import com.ityu.bean.entity.shop.OrderItem;
-import com.ityu.bean.entity.shop.OrderLog;
+import com.ityu.bean.entity.shop.*;
 import com.ityu.bean.enumeration.shop.OrderEnum;
 import com.ityu.bean.vo.SpringContextHolder;
 import com.ityu.bean.vo.query.SearchFilter;
@@ -39,6 +36,10 @@ public class OrderService extends BaseService<Order, Long, OrderRepository> {
     @Autowired
     private ExpressInfoService expressInfoService;
     @Autowired
+    private GoodsService goodsService;
+    @Autowired
+    private GoodsSkuService goodsSkuService;
+    @Autowired
     private CfgService cfgService;
     /**
      * 获取唯一订单号
@@ -54,8 +55,36 @@ public class OrderService extends BaseService<Order, Long, OrderRepository> {
     public void save(Order order, List<OrderItem> itemList) {
         order.setOrderSn(getOrderSn());
         insert(order);
-        for(OrderItem item:itemList){
+        for (OrderItem item : itemList) {
             item.setIdOrder(order.getId());
+            //减库存
+            if(item.getIdSku()!=null) {
+                GoodsSku goodsSku = goodsSkuService.get(item.getIdSku());
+                goodsSku.setStock(goodsSku.getStock()-item.getCount());
+                if(goodsSku.getStock()<0){
+                    throw  new RuntimeException("库存不足");
+                }
+                //更新sku的库存
+                goodsSkuService.update(goodsSku);
+
+                //更新商品的库存
+                List<GoodsSku> list = goodsSkuService.queryByIdGoods(item.getIdGoods());
+                int stock = 0;
+                for(GoodsSku sk:list){
+                    stock+= goodsSku.getStock();
+                }
+                Goods goods = goodsService.get(goodsSku.getIdGoods());
+                goodsService.update(goods);
+            }else{
+                Goods goods = goodsService.get(item.getIdGoods());
+                //更新商品库存
+                goods.setStock(goods.getStock()-item.getCount());
+                if(goods.getStock()<0){
+                    throw  new RuntimeException("库存不足");
+                }
+                goodsService.update(goods);
+            }
+
         }
         orderItemRepository.saveAll(itemList);
         OrderLog orderLog = new OrderLog();

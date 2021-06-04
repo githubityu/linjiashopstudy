@@ -55,14 +55,14 @@ public class CartService extends BaseService<Cart,Long, CartRepository> {
         Integer result = 0;
         if(old!=null){
             //判断之前是否添加到购物车，如果已添加，则在原有基础上增加购买数量即可
-            old.setCount(old.getCount().add(new BigDecimal(count)));
+            old.setCount(old.getCount()+count);
             update(old);
 
         }else {
             //购物车新增商品
             Cart cart = new Cart();
             cart.setIdGoods(cartVo.getIdGoods());
-            cart.setCount(new BigDecimal(count));
+            cart.setCount(count);
             cart.setIdUser(cartVo.getIdUser());
             cart.setIdSku(idSku);
             insert(cart);

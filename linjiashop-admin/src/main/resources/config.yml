@@ -1,5 +1,0 @@
-staticAccessPath: /file/**
-#uploadFolder: /home/study2/images/
-uploadFolder: E:/study/java/uploadFiles/
-min: 1
-max: 5

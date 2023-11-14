@@ -1,6 +1,0 @@
-rootProject.name = 'linjiashopstudy'
-include 'common-core'
-include 'linjiashop-admin'
-include 'linjiashop-mobile'
-include 'linjiashop-generator'
-

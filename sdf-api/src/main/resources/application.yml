@@ -1,0 +1,96 @@
+server:
+  port: 8087
+#  servlet:
+#    context-path: /api
+spring:
+  application:
+    name: sdf-api
+    ###spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+    #spring.jpa.properties.hibernate.globally_quoted_identifiers_skip_column_definitions=true
+  jpa:
+    show-sql: true
+    #    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    servlet:
+      multipart:
+        max-file-size: 100MB
+      hibernate:
+        ddl-auto: update
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/websdf?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: 123456
+    druid:
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: false
+        login-username: druiduser
+        login-password: druidpwd
+        allow: 127.0.0.1
+  sql-script-encoding: UTF-8
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+jwt:
+  tokenHeader: Authorization #JWT存储的请求头
+  secret: vry0bHNhK3hkM2tnOHl6a2F4bW1tMmhrZGx5b2w4b2x1dWVyZGx5b2x1dWVyZGx5b2x1 #JWT加解密使用的密钥
+  expiration: 604800 #JWT的超期限时间(60*60*24*7)
+  tokenHead: 'Bearer '  #JWT负载中拿到开头
+redis:
+  host: 127.0.0.1 # Redis服务器地址
+  database: 0 # Redis数据库索引（默认为0）
+  port: 6379 # Redis服务器连接端口
+  password: 111111 # Redis服务器连接密码（默认为空）
+  key:
+    admin: 'ums:admin'
+    resourceList: 'ums:resourceList'
+  expire:
+    common: 86400 # 24小时
+  jedis:
+    pool:
+      max-active: 8 # 连接池最大连接数（使用负值表示没有限制）
+      max-wait: -1ms # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-idle: 8 # 连接池中的最大空闲连接
+      min-idle: 0 # 连接池中的最小空闲连接
+  timeout: 5000 # 连接超时时间（毫秒）
+
+secure:
+  ignored:
+    urls: #安全路径白名单
+      - /swagger-ui/
+      - /swagger-resources/**
+      - /**/v2/api-docs
+      - /swagger-ui.html
+      - /*.html
+      - /favicon.ico
+      - /**/*.html
+      - /**/*.css
+      - /**/*.js
+      - /v3/api-docs/**
+      - /actuator/**
+      - /druid/**
+      - /**/*.html
+      - /**/*.js
+      - /**/*.css
+      - /**/*.png
+      - /**/*.map
+      - /favicon.ico
+      - /actuator/**
+      - /druid/**
+      - /account/login
+      - /account/register
+      - /admin/info
+      - /admin/logout
+      - /minio/upload
+      - /test/*
+      - /file/download
+      - /file/getImgStream
+      - /file/getImgBase64
